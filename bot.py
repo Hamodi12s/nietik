@@ -3,28 +3,36 @@ from typing import Tuple
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
+# Configs
 API_HASH = os.environ['API_HASH']
 APP_ID = int(os.environ['APP_ID'])
 BOT_TOKEN = os.environ['BOT_TOKEN']
 downloads = './downloads/{}/'
 
+# Button
 START_BUTTONS=[
     [
-        InlineKeyboardButton('السورس', url='https://github.com/JMTHON-AR/TikTok'),
-        InlineKeyboardButton('قناة البوتات', url='https://t.me/jmthon'),
-    ],]
+        InlineKeyboardButton('ɢʀᴏᴜᴘ', url='https://t.me/ElizaSupporters'),
+        InlineKeyboardButton('ᴄʜᴀɴɴᴇʟ', url='https://t.me/Updates_of_ElizaBot'),
+    ],
+    [InlineKeyboardButton('ᴏᴡɴᴇʀ', url='https://t.me/SehathSanvidu')],
+]
 
 DL_BUTTONS=[
     [
-        InlineKeyboardButton('بدون علامه مائية', callback_data='nowm'),
-        InlineKeyboardButton('علامة مائية', callback_data='wm'),
+        InlineKeyboardButton('ᴺᴼ ᵂᴬᵀᴱᴿᴹᴬᴿᴷ', callback_data='nowm'),
+        InlineKeyboardButton('ᵂᴬᵀᴱᴿᴹᴬᴿᴷ', callback_data='wm'),
     ],
-    [InlineKeyboardButton('مقطع صوتي', callback_data='audio')],
+    [InlineKeyboardButton('ᴬᵁᴰᴵᴼ', callback_data='audio')],
 ]
 
 
-jmthon = Client('TikTok', api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+# Running bot
+xbot = Client('Tik-Tok-download', api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
+
+# Helpers
+# Thanks to FridayUB
 async def run_cmd(cmd: str) -> Tuple[str, str, int, int]:
   args = shlex.split(cmd)
   process = await asyncio.create_subprocess_exec(
@@ -38,22 +46,23 @@ async def run_cmd(cmd: str) -> Tuple[str, str, int, int]:
       process.pid,
   )
 
-@jmthon.on_message(filters.command('start') & filters.private)
+# Start
+@xbot.on_message(filters.command('start') & filters.private)
 async def _start(bot, update):
-  await update.reply_text(f"** مرحبا أنا بوت تحميل من التيكتوك يمكنك تحميل الفيديوهات او المقاطع الصوتية من هنا فقط ارسل رابط المقطع هنا**", True, reply_markup=InlineKeyboardMarkup(START_BUTTONS))
+  await update.reply_text(f"ɪ'ᴍ Eliza TɪᴋTᴏᴋ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ!\nʏᴏᴜ ᴄᴀɴ ᴅᴏᴡɴʟᴏᴀᴅ TɪᴋTᴏᴋ ᴠɪᴅᴇᴏ/ᴀᴜᴅɪᴏ ᴜsɪɴɢ ᴛʜɪs ʙᴏᴛ", True, reply_markup=InlineKeyboardMarkup(START_BUTTONS))
 
 # Downloader for tiktok
-@jmthon.on_message(filters.regex(pattern='.*http.*') & filters.private)
+@xbot.on_message(filters.regex(pattern='.*http.*') & filters.private)
 async def _tiktok(bot, update):
   url = update.text
   session = requests.Session()
   resp = session.head(url, allow_redirects=True)
   if not 'tiktok.com' in resp.url:
     return
-  await update.reply('عليك تحديد نوع التنزيل من الاسفل ', True, reply_markup=InlineKeyboardMarkup(DL_BUTTONS))
+  await update.reply('Select the options below', True, reply_markup=InlineKeyboardMarkup(DL_BUTTONS))
 
 # Callbacks
-@jmthon.on_callback_query()
+@xbot.on_callback_query()
 async def _callbacks(bot, cb: CallbackQuery):
   if cb.data == 'nowm':
     dirs = downloads.format(uuid.uuid4().hex)
@@ -127,4 +136,4 @@ async def _callbacks(bot, cb: CallbackQuery):
     await bot.send_audio(update.chat.id, f'{ttid}.mp3',)
     shutil.rmtree(dirs)
 
-jmthon.run()
+xbot.run()
